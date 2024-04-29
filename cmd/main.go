@@ -1,10 +1,11 @@
 package main
 
 import (
-	"fmt"
 	"html/template"
 	"io"
 	"net/http"
+	"strconv"
+	"time"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -24,11 +25,22 @@ func NewTemplates() *Templates {
 	}
 }
 
+var id = 0
 type Contact struct {
 		Name string
 		Email string
+		Id int
 }
 type Contacts = []Contact
+
+func createNewContact (name, email string) Contact {
+	id++
+	return Contact{
+		Name: name,
+		Email: email,
+		Id: id,	
+	}
+}
 
 
 func (d *Data) hasEmail (email string) bool {
@@ -44,6 +56,17 @@ type Data struct {
 	Contacts Contacts
 }
 
+
+func (d *Data) indexOf(id int) int {
+	for i, contact := range d.Contacts {
+		if id == contact.Id {
+			return i
+		}
+	}
+
+	return -1
+}
+
 func newData () Data {
 	return Data{
 		Contacts: []Contact{
@@ -52,13 +75,6 @@ func newData () Data {
 		},
 	}
 } 
-
-func createNewContact (name, email string) Contact {
-	return Contact{
-		Name: name,
-		Email: email,
-	}
-}
 
 type FromData struct {
 	Values map[string]string
@@ -114,6 +130,26 @@ func main() {
 		c.Render(http.StatusOK, "form", newFormData())
 		return c.Render(http.StatusOK, "oob-contact", contact)
 	});
+
+
+	e.DELETE("/contacts/:id", func(c echo.Context) error {
+		time.Sleep(2 * time.Second)
+		idStr := c.Param("id")
+		id, err := strconv.Atoi(idStr)
+		if err != nil {
+			return c.String(http.StatusBadRequest, "Invalid id")
+		}
+
+		index := page.Data.indexOf(id)
+		if index == -1 {
+			return c.String(http.StatusNotFound, "Contact not found")
+		}
+
+		page.Data.Contacts = append(page.Data.Contacts[:index], page.Data.Contacts[index+1:]...)
+		return c.NoContent(http.StatusOK)
+	});
+
+
 
 	e.Logger.Fatal(e.Start(":42069"))
 }
