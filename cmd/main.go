@@ -107,6 +107,9 @@ func main() {
 
 	page := newPage()
 
+	e.Static("/images", "images")
+	e.Static("/css", "css")
+
 	e.GET("/", func(c echo.Context) error {
 		return c.Render(http.StatusOK, "index", page)
 	});
@@ -133,7 +136,7 @@ func main() {
 
 
 	e.DELETE("/contacts/:id", func(c echo.Context) error {
-		time.Sleep(2 * time.Second)
+		time.Sleep(5 * time.Second)
 		idStr := c.Param("id")
 		id, err := strconv.Atoi(idStr)
 		if err != nil {

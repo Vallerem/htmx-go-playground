@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
     <script src="https://unpkg.com/htmx.org/dist/htmx.js"></script>
+    <link rel="stylesheet" href="/css/index.css">
   </head>
   <body>
     {{template "form" .Form}}
@@ -56,8 +57,8 @@
 {{ end }}
 
 {{ block "contact" . }}
-  <div id="contact-{{ .Id }}" style="display: flex; margin-top: 1rem;" >
-    <div hx-target="#contact-{{ .Id }}" hx-swap="outerHTML" hx-delete="/contacts/{{ .Id }}" style="margin-right: 1rem; padding: 0px; cursor: pointer;" >
+  <div class="contact" id="contact-{{ .Id }}" style="display: flex; margin-top: 1rem;" >
+    <div hx-indicator="#ci-{{ .Id }}"  hx-target="#contact-{{ .Id }}" hx-swap="outerHTML swap:500ms" hx-delete="/contacts/{{ .Id }}" style="margin-right: 1rem; padding: 0px; cursor: pointer;" >
       <svg style="width: 1rem; height: 1rem;" fill="#000000" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
           width="800px" height="800px" viewBox="0 0 485 485" xml:space="preserve">
         <g>
@@ -71,6 +72,10 @@
     </div>
     -Name: <span>{{.Name}} - </span>  
     Email: <span>{{.Email}}</span>
+
+  <div id="ci-{{ .Id }}" class="htmx-indicator">
+    <img src="/images/bars.svg" alt="loading" style="width: 1rem;" />
+  </div>
   </div>
 {{end }}
 
